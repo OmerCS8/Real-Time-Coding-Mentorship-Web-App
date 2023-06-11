@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Online Coding App</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Welcome to the Online Coding App</h1>
+    <p>Choose a code block to get started.</p>
+  </header>
+
+  <main>
+    <ul id="codeBlockList">
+      <!-- Code block items will be added dynamically here -->
+    </ul>
+  </main>
+  <script>
+    const socket = io();
+    socket.emit('getCodeBlockList', 1);
+
+    socket.on('codeBlockList', (codeBlocks) => {
+      const codeBlockList = document.getElementById('codeBlockList');
+      codeBlockList.innerHTML = '';
+
+      codeBlocks.forEach((codeBlock) => {
+        const listItem = document.createElement('li');
+        listItem.textContent = codeBlock.title;
+        listItem.addEventListener('click', () => {
+          window.location.href = `/codeBlock?id=${codeBlock.id}`;
+        });
+
+        codeBlockList.appendChild(listItem);
+      });
+    });
+  </script>
+</body>
+</html>
