@@ -1,0 +1,16 @@
+{
+  "name": "real-time-coding-mentorship-web-app",
+  "version": "1.0.0",
+  "description": "This application allows mentors and students to collaborate remotely, with mentors sharing code blocks in read-only mode while students can make changes in real-time. The application supports syntax highlighting, code synchronization using Socket.IO, and features a lobby page for code block selection.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.2"
+  }
+}
