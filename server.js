@@ -50,6 +50,18 @@ io.on('connection', (socket) => {
       }
       });
   });
+
+  socket.on('updateCodeBlock', (codeBlockId, updatedCode) => {
+    const codeBlock = codeBlocks.find((block) => block.id === parseInt(codeBlockId));
+    const filePath = path.join(__dirname, 'public', 'codeBlocks', codeBlock.code);
+    fs.writeFile(filePath, updatedCode, 'utf8', (err) => {
+      if (err) {
+        console.error(err);
+      } else {
+        socket.broadcast.emit('codeBlockUpdated', updatedCode);
+      }
+    });
+  });
 });
 
 // io.on('connection', (socket) => {

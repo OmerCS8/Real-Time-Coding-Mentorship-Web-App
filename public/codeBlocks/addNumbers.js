@@ -3,5 +3,4 @@ function addNumbers(a, b) {
   }
   
   const result = addNumbers(5, 10);
-  console.log(result);
-  
+  console.log();

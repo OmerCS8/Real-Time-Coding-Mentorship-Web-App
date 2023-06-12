@@ -11,11 +11,13 @@
 <body>
   <header>
     <h1>Code Block Details</h1>
-    <p id = "fileName">File Name</p>
+    <p id="fileName">File Name</p>
   </header>
 
   <main>
-    <pre><code id="codeBlockContent" class="javascript"></code></pre>
+    <div class="code-container">
+      <textarea id="codeBlockContent" class="javascript"></textarea>
+    </div>
   </main>
 </body>
 
@@ -28,7 +30,17 @@
   socket.emit('getCodeBlockDetails', window.location.search.split('=')[1]);
   socket.on('codeBlockDetails', (codeBlock, data) => {
     fileName.textContent = codeBlock.title;
-    codeBlockContent.textContent = data;
+    codeBlockContent.value = data;
+    hljs.highlightBlock(codeBlockContent);
+  });
+
+  codeBlockContent.addEventListener('input', (event) => {
+    const updatedCode = event.target.value;
+    socket.emit('updateCodeBlock', window.location.search.split('=')[1], updatedCode);
+  });
+
+  socket.on('codeBlockUpdated', (code) => {
+    codeBlockContent.value = code;
     hljs.highlightBlock(codeBlockContent);
   });
 </script>
