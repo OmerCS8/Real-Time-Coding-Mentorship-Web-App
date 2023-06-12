@@ -8,57 +8,61 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
 
 </head>
-<body>
-  <header>
-    <h1>Code Block Details</h1>
-    <p id="fileName">File Name</p>
-  </header>
+  <body>
+    <header>
+      <h1>Code Block Details</h1>
+      <p id="fileName">File Name</p>
+      <p id="modeText"></p>
+      <a href="/" class="return-button">Return</a>
+    </header>
 
-  <main>
-    <div class="code-container">
-      <div id="codeBlockContentContainer">
-        <textarea id="codeBlockContent" class="javascript"></textarea>
+    <main>
+      <div class="code-container">
+        <div id="codeBlockContentContainer">
+          <textarea id="codeBlockContent" class="javascript"></textarea>
+        </div>
       </div>
-    </div>
-  </main>
-</body>
+    </main>
 
-<script>
-  const socket = io();
-  const codeBlockContentContainer = document.getElementById('codeBlockContentContainer');
-  const fileName = document.getElementById('fileName');
-  let codeBlockContent;
-  let isAMentor;
+    <script>
+      const socket = io();
+      const codeBlockContentContainer = document.getElementById('codeBlockContentContainer');
+      const modeText = document.getElementById('modeText');
+      const fileName = document.getElementById('fileName');
+      let codeBlockContent;
+      let isAMentor;
 
-  socket.emit('getIsMentor', window.location.search.split('=')[1]);
+      socket.emit('getIsMentor', window.location.search.split('=')[1]);
 
-  socket.on('isMentor', (isMentor) => {
-    console.log("isMentor:", isMentor);
-    isAMentor = isMentor;
-    if (isMentor) {
-      codeBlockContentContainer.innerHTML = '<pre id="codeBlockContent" class="javascript"></pre>';
-    }
-    else{
-      codeBlockContentContainer.innerHTML = '<textarea id="codeBlockContent" class="javascript"></textarea>';
-    }
-    codeBlockContent = document.getElementById('codeBlockContent');
-    codeBlockContent.addEventListener('input', (event) => {
-      const updatedCode = event.target.value;
-      socket.emit('updateCodeBlock', window.location.search.split('=')[1], updatedCode);
-    });
-    socket.emit('getCodeBlockDetails', window.location.search.split('=')[1]);
-  });
+      socket.on('isMentor', (isMentor) => {
+        console.log("isMentor:", isMentor);
+        isAMentor = isMentor;
+        if (isMentor) {
+          codeBlockContentContainer.innerHTML = '<pre id="codeBlockContent" class="javascript"></pre>';
+          modeText.textContent = 'Mentor Mode';
+        }
+        else{
+          codeBlockContentContainer.innerHTML = '<textarea id="codeBlockContent" class="javascript"></textarea>';
+          modeText.textContent = 'Student Mode';
+        }
+        codeBlockContent = document.getElementById('codeBlockContent');
+        codeBlockContent.addEventListener('input', (event) => {
+          const updatedCode = event.target.value;
+          socket.emit('updateCodeBlock', window.location.search.split('=')[1], updatedCode);
+        });
+        socket.emit('getCodeBlockDetails', window.location.search.split('=')[1]);
+      });
 
-  socket.on('codeBlockDetails', (codeBlock, data) => {
-    fileName.textContent = codeBlock.title;
-    isAMentor ? codeBlockContent.textContent = data : codeBlockContent.value = data;
-    hljs.highlightElement(codeBlockContent);
-  });
+      socket.on('codeBlockDetails', (codeBlock, data) => {
+        fileName.textContent = codeBlock.title;
+        isAMentor ? codeBlockContent.textContent = data : codeBlockContent.value = data;
+        hljs.highlightElement(codeBlockContent);
+      });
 
-  socket.on('codeBlockUpdated', (code) => {
-    isAMentor ? codeBlockContent.textContent = code : codeBlockContent.value = code;
-    hljs.highlightElement(codeBlockContent);
-  });
-</script>
-
+      socket.on('codeBlockUpdated', (code) => {
+        isAMentor ? codeBlockContent.textContent = code : codeBlockContent.value = code;
+        hljs.highlightElement(codeBlockContent);
+      });
+    </script>
+  </body>
 </html>
