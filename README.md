@@ -23,7 +23,7 @@ To get a local copy of the project up and running, follow these steps:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/OmerCS8/Real-Time-Coding-Mentorship-Web-App.git
+   git clone https://github.com/OmerCS8/RealTime-Mentorship-App.git
 2. Install the dependencies:
    ```
    cd real-time-coding-mentorship
