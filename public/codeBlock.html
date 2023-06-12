@@ -16,32 +16,48 @@
 
   <main>
     <div class="code-container">
-      <textarea id="codeBlockContent" class="javascript"></textarea>
+      <div id="codeBlockContentContainer">
+        <textarea id="codeBlockContent" class="javascript"></textarea>
+      </div>
     </div>
   </main>
 </body>
 
 <script>
   const socket = io();
-
-  const codeBlockContent = document.getElementById('codeBlockContent');
+  const codeBlockContentContainer = document.getElementById('codeBlockContentContainer');
   const fileName = document.getElementById('fileName');
+  let codeBlockContent;
+  let isAMentor;
 
-  socket.emit('getCodeBlockDetails', window.location.search.split('=')[1]);
-  socket.on('codeBlockDetails', (codeBlock, data) => {
-    fileName.textContent = codeBlock.title;
-    codeBlockContent.value = data;
-    hljs.highlightBlock(codeBlockContent);
+  socket.emit('getIsMentor', window.location.search.split('=')[1]);
+
+  socket.on('isMentor', (isMentor) => {
+    console.log("isMentor:", isMentor);
+    isAMentor = isMentor;
+    if (isMentor) {
+      codeBlockContentContainer.innerHTML = '<pre id="codeBlockContent" class="javascript"></pre>';
+    }
+    else{
+      codeBlockContentContainer.innerHTML = '<textarea id="codeBlockContent" class="javascript"></textarea>';
+    }
+    codeBlockContent = document.getElementById('codeBlockContent');
+    codeBlockContent.addEventListener('input', (event) => {
+      const updatedCode = event.target.value;
+      socket.emit('updateCodeBlock', window.location.search.split('=')[1], updatedCode);
+    });
+    socket.emit('getCodeBlockDetails', window.location.search.split('=')[1]);
   });
 
-  codeBlockContent.addEventListener('input', (event) => {
-    const updatedCode = event.target.value;
-    socket.emit('updateCodeBlock', window.location.search.split('=')[1], updatedCode);
+  socket.on('codeBlockDetails', (codeBlock, data) => {
+    fileName.textContent = codeBlock.title;
+    isAMentor ? codeBlockContent.textContent = data : codeBlockContent.value = data;
+    hljs.highlightElement(codeBlockContent);
   });
 
   socket.on('codeBlockUpdated', (code) => {
-    codeBlockContent.value = code;
-    hljs.highlightBlock(codeBlockContent);
+    isAMentor ? codeBlockContent.textContent = code : codeBlockContent.value = code;
+    hljs.highlightElement(codeBlockContent);
   });
 </script>
 
